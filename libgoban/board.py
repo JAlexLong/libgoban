@@ -68,9 +68,8 @@ class Point(Tuple[int, int]):
             ValueError: If point_str fails input validation checks.
         """
         # TODO: Add 1-1 format parsing routines
-        if type(point_str) != str:
-            raise TypeError(f"Cannot parse Point from {type(point_str)}\n\
-                              Try converting to str type first.")
+        if not isinstance(point_str, str):
+            raise TypeError(f"Expected a str, got {type(point_str)}")
 
         if len(point_str) > 3 or len(point_str) < 2:
             raise ValueError(f"Invalid coordinate format: '{point_str}'\n\
@@ -83,7 +82,7 @@ class Point(Tuple[int, int]):
 
         col = ord(col_letter) - ord('A') + 1
         # adjust offset to account for missing 'I' in BOARD_LETTERS
-        if col_letter in BOARD_LETTERS[7:]:
+        if col_letter in BOARD_LETTERS[8:]:
             col -= 1
 
         # convert str to int
@@ -104,8 +103,10 @@ class Point(Tuple[int, int]):
             String representation of the point in the human-readable format "A1", "B3", etc.
         """
         # adjusts offset to account for missing 'I' in valid_col_letters
+        s = ""
         col_letter = chr(ord('A') + self[0] - 1) if self[1] <= 8 else chr(ord('A') + self[1])
-        return f"{col_letter}{20-self[1]}"
+        s += f"{col_letter}{20-self[1]}"
+        return s
 
     def __eq__(self, value):
         return super().__eq__(value)
@@ -129,6 +130,8 @@ class Board:
         # print(self.state)  # Uncomment to see the board representation
 
     def __getitem__(self, point: Point) -> Optional[Stone]:
+        if not isinstance(point, Point):
+            raise TypeError(f"Expected a Point object, got {type(point)}")
         col, row = point
         y = row - 1  # convert 1-based indexing to 0-based
         x = col - 1
@@ -144,16 +147,19 @@ class Board:
         s = ""
         for y in range(self.size):
             for x in range(self.size):
-                s += self.state[x][y] if type(self.state[x][y]) == Stone else '.'
+                s += self.state[y][x] if type(self.state[y][x]) == Stone else '.'
                 if len(s) % (self.size + len("\n")) == self.size:
                     s += "\n"
         return s
 
     def __eq__(self, other):
-        for x in range(len(self)):
-            for y in range(len(self)):
-                if self[x][y] != other[x][y]:
-                    return False
+        if not isinstance(other, Board):
+            return False
+        if self.size != other.size:
+            return False
+        for point in self:
+            if self[point] != other[point]:
+                return False
         return True
 
     def __len__(self):
@@ -166,18 +172,17 @@ class Board:
         class BoardIterator:
             def __init__(self, board):
                 self.board = board
-                self.x = 0
-                self.y = 0
-
+                self.col, self.row == 1, 1
+            
             def __next__(self):
-                if self.x >= self.board.size:
+                if self.row > self.board.size:
                     raise StopIteration
-                point = (self.x, self.y)
-                self.y += 1
-                if self.y >= self.board.size:
-                    self.y = 0
-                    self.x += 1
-                return point
+                point = Point(self.col, self.row)
+                self.col += 1
+                if self.col > self.board.size:
+                    self.col = 1
+                    self.row += 1
+                return self.board[point]
 
         return BoardIterator(self)
 
@@ -190,11 +195,11 @@ class Board:
         Returns:
             list: [left, right, up, down]
         """
-        x, y = point
-        left_stone = self[point] if x != 0 else None
-        right_stone = self[point] if x != self.size else None
-        up_stone = self[point] if y != 0 else None
-        down_stone = self[point] if y != self.size else None
+        col, row = point
+        left_stone = self[point] if row != 0 else None
+        right_stone = self[point] if row != self.size else None
+        up_stone = self[point] if col != 0 else None
+        down_stone = self[point] if col != self.size else None
 
         neighbors = [left_stone, right_stone, up_stone, down_stone]
         return neighbors
