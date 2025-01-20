@@ -27,8 +27,8 @@ class Point(Tuple[int, int]):
         """
         Creates a new Point instance in the traditional Japanese format where 1-1
             is in the upper-left corner. I've chosen this format as the default
-            because it is the closest to how a 2d list is naturally indexed,
-            which is what our Board class will primarily resemble.
+            because it is the closest to what our Board class will resemble.
+            For more information, see https://senseis.xmp.net/?Coordinates
         Args:
             col: Column coordinate (1-indexed).
             row: Row coordinate (1-indexed).
@@ -42,9 +42,10 @@ class Point(Tuple[int, int]):
         """
         Returns a Point instance from a string representation.
         Args:
-            point_str: String representation of the point in the 'A1' format where
+            point_str: String representation of the point in the 'A1' format, where
                         'A1' is in the lower-left corner of the board.
                        'A1' == (1, 19), 'Q11' == (16, 9), etc. 
+                       For more information, see https://senseis.xmp.net/?Coordinates
         Returns:
             A new Point instance.
         Raises:
@@ -54,7 +55,7 @@ class Point(Tuple[int, int]):
         # input validation
         if not point_str or len(point_str) not in [2, 3]:
             raise ValueError(f"Invalid coordinate format: {point_str}\n\
-                               Expected format \'a1\', \'q11\', etc.")
+                               Expected format 'a1', 'q11', etc.")
         col_letter = point_str[0].upper()
         if col_letter not in BOARD_LETTERS:
             raise ValueError(f"Invalid column letter: {col_letter}")
@@ -86,33 +87,6 @@ class Point(Tuple[int, int]):
 
     def __eq__(self, value):
         return super().__eq__(value)
-
-@dataclass
-class Group:
-    def find_members(self):
-        """Uses recursion to find all ally stones
-        This thing is a bit of a monster in terms of nesting... I will hopefully clean this up later
-        """
-        # break the recursion if we've already gone over all coordinates
-        if self.stones == self.stones_seen:
-            return
-
-        for stone in self.stones:
-            # skip the stone if we've seen it before
-            if stone in self.stones_seen:
-                continue
-            # note that we've looked at this stone now
-            self.stones_seen.append(stone)
-            neighbors = self.Board.get_neighbors(stone)
-            # look at the immediate neighboring points on the Board
-            for direction in neighbors:
-                x, y = direction
-                neighbor = self.Board[x][y]
-                if neighbor == self.color:
-                    self.stones.append(neighbor)
-                    self.find_members()
-                elif neighbor != None and neighbor not in self.liberties:
-                    self.liberties.append(neighbor)
 
 
 class Board:
@@ -202,3 +176,18 @@ class Board:
 
         neighbors = [left_stone, right_stone, up_stone, down_stone]
         return neighbors
+
+# @dataclass
+# class Group:
+#     stone: Stone  # represents the Stone that all members will be
+#     seed: Point
+#     _board: Board
+
+#     def _find_members(self):
+#         """Uses recursion to find all ally stones
+#         This thing is a bit of a monster in terms of nesting... I will hopefully clean this up later
+#         """
+#         # break the recursion if we've already gone over all coordinates
+#         _seen: list[Point] = []
+#         if self.members == _seen:
+#             return
