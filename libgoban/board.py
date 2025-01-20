@@ -20,6 +20,7 @@ class Stone(IntEnum):
 class Point(Tuple[int, int]):
     """
     Represents a point on a Go board.
+    Coordinates are in the format (col, row) and are 1-based indexed.
     Inherits from typing.Tuple for immutability and efficiency.
     """
     def __new__(cls, col: int, row: int) -> 'Point':

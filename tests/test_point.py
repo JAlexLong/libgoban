@@ -25,6 +25,10 @@ def test_point_parse():
     pt_k10 = Point.parse("k10")
     assert pt10_10 == pt_k10
 
+    pt16_9 = Point(16, 9)
+    pt_q11 = Point.parse("q11")
+    assert pt16_9 == pt_q11
+
     pt19_19 = Point(19, 1)
-    pt_t19 = Point.parse("t19")
+    pt_t19 = Point.parse("T19")
     assert pt19_19 == pt_t19
