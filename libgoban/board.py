@@ -1,3 +1,18 @@
+# Copyright (C) 2025  J. Alex Long <jalexlong@proton.me>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 from dataclasses import dataclass
 from enum import IntEnum
 from typing import Optional, Tuple
@@ -16,6 +31,7 @@ class Stone(IntEnum):
     def OTHER(self) -> 'Stone':
         """Returns the opposite color of the current stone."""
         return Stone((Stone.WHITE.value, Stone.BLACK.value)[self.value])
+
 
 class Point(Tuple[int, int]):
     """
@@ -51,14 +67,17 @@ class Point(Tuple[int, int]):
         Raises:
             ValueError: If point_str fails input validation checks.
         """
-
-        # input validation
-        if not point_str or len(point_str) not in [2, 3]:
+        # validate input
+        if type(point_str) != str:
+            raise TypeError(f"Cannot parse Point from {type(point_str)}\n\
+                              Try converting to str type first.")
+        if len(point_str) > 3 or len(point_str) < 2:
             raise ValueError(f"Invalid coordinate format: {point_str}\n\
                                Expected format 'a1', 'q11', etc.")
         col_letter = point_str[0].upper()
         if col_letter not in BOARD_LETTERS:
-            raise ValueError(f"Invalid column letter: {col_letter}")
+            raise ValueError(f"Invalid column letter: {col_letter}\n\
+                               Valid column letters are '{BOARD_LETTERS}'")
 
         # convert from letter in str to int
         col = ord(col_letter) - ord('A') + 1
@@ -69,6 +88,8 @@ class Point(Tuple[int, int]):
         # convert str to int
         try:
             row = 20 - int(point_str[1:])
+            if row < 1 or row > 19:
+                raise ValueError
         except ValueError:
             raise ValueError(f"Invalid row number: {point_str[1:]}")
 
@@ -76,7 +97,7 @@ class Point(Tuple[int, int]):
 
     def __str__(self) -> str:
         """
-        Returns a string representation of the point.
+        Returns a string representation of the point in 'A1' format.
 
         Returns:
             String representation of the point in the human-readable format "A1", "B3", etc.
