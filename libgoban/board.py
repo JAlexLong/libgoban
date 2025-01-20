@@ -141,11 +141,16 @@ class Board:
 
     def __str__(self):
         s = ""
-        for y in range(self.size):
-            for x in range(self.size):
-                s += self.state[y][x] if type(self.state[y][x]) == Stone else '.'
-                if len(s) % (self.size + len("\n")) == self.size:
-                    s += "\n"
+        for row in reversed(self.state):
+            for stone in row:
+                match stone:
+                    case Stone.BLACK:
+                        s += "X"
+                    case Stone.WHITE:
+                        s += "O"
+                    case None:
+                        s += "."
+            s += "\n"
         return s
 
     def __eq__(self, other):
@@ -168,7 +173,7 @@ class Board:
         class BoardIterator:
             def __init__(self, board):
                 self.board = board
-                self.col, self.row == 1, 1
+                self.col, self.row = 1, 1
             
             def __next__(self):
                 if self.row > self.board.size:
