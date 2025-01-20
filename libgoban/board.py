@@ -133,15 +133,11 @@ class Board:
         if not isinstance(point, Point):
             raise TypeError(f"Expected a Point object, got {type(point)}")
         col, row = point
-        y = row - 1  # convert 1-based indexing to 0-based
-        x = col - 1
-        return self.state[y][x]
+        return self.state[row-1][col-1]
 
     def __setitem__(self, point: Point, stone: Optional[Stone]):
         col, row = point
-        y = row - 1  # convert 1-based indexing to 0-based
-        x = col - 1
-        self.state[y][x] = stone
+        self.state[row-1][col-1] = stone
 
     def __str__(self):
         s = ""
@@ -185,24 +181,6 @@ class Board:
                 return self.board[point]
 
         return BoardIterator(self)
-
-    def get_neighbors(self, point: Point) -> list[Optional[Stone]]:
-        """returns list of stones in neighboring squares
-
-        Args:
-            point (Point): coordinate of point on the Board in question
-
-        Returns:
-            list: [left, right, up, down]
-        """
-        col, row = point
-        left_stone = self[point] if row != 0 else None
-        right_stone = self[point] if row != self.size else None
-        up_stone = self[point] if col != 0 else None
-        down_stone = self[point] if col != self.size else None
-
-        neighbors = [left_stone, right_stone, up_stone, down_stone]
-        return neighbors
 
 # @dataclass
 # class Group:
