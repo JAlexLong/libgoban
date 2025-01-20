@@ -67,19 +67,20 @@ class Point(Tuple[int, int]):
         Raises:
             ValueError: If point_str fails input validation checks.
         """
-        # validate input
+        # TODO: Add 1-1 format parsing routines
         if type(point_str) != str:
             raise TypeError(f"Cannot parse Point from {type(point_str)}\n\
                               Try converting to str type first.")
+
         if len(point_str) > 3 or len(point_str) < 2:
-            raise ValueError(f"Invalid coordinate format: {point_str}\n\
+            raise ValueError(f"Invalid coordinate format: '{point_str}'\n\
                                Expected format 'a1', 'q11', etc.")
         col_letter = point_str[0].upper()
+
         if col_letter not in BOARD_LETTERS:
-            raise ValueError(f"Invalid column letter: {col_letter}\n\
+            raise ValueError(f"Invalid column letter: '{col_letter}'\n\
                                Valid column letters are '{BOARD_LETTERS}'")
 
-        # convert from letter in str to int
         col = ord(col_letter) - ord('A') + 1
         # adjust offset to account for missing 'I' in BOARD_LETTERS
         if col_letter in BOARD_LETTERS[7:]:
@@ -118,26 +119,26 @@ class Board:
             size (int, optional): Indicates the size of the game Board.
             Defaults to 19.
         """
+        if size > 19 or size < 2:
+            raise ValueError(f"Invalid board size: {size}")
+
         self.size = size
-        # create an empty 2d list to hold the state of our Board class
         self.state: list[list[Optional[Stone]]] = [
-            [None for _ in range(self.size)] for _ in range(self.size)
+            [None for _ in range(size)] for _ in range(size)
         ]
         # print(self.state)  # Uncomment to see the board representation
 
     def __getitem__(self, point: Point) -> Optional[Stone]:
-        x, y = point
-        if 0 <= x < self.size and 0 <= y < self.size:
-            return self.state[x][y]
-        else:
-            raise IndexError("Index out of bounds")
+        col, row = point
+        y = row - 1  # convert 1-based indexing to 0-based
+        x = col - 1
+        return self.state[y][x]
 
     def __setitem__(self, point: Point, stone: Optional[Stone]):
-        x, y = point
-        if 0 <= x < self.size and 0 <= y < self.size:
-            self.state[x][y] = stone
-        else:
-            raise IndexError("Index out of bounds")
+        col, row = point
+        y = row - 1  # convert 1-based indexing to 0-based
+        x = col - 1
+        self.state[y][x] = stone
 
     def __str__(self):
         s = ""
