@@ -24,22 +24,26 @@ class Point(Tuple[int, int]):
     """
     def __new__(cls, col: int, row: int) -> 'Point':
         """
-        Creates a new Point instance.
+        Creates a new Point instance in the traditional Japanese format where 1-1
+            is in the upper-left corner. I've chosen this format as the default
+            because it is the closest to how a 2d list is naturally indexed,
+            which is what our Board class will primarily resemble.
         Args:
             col: Column coordinate (1-indexed).
             row: Row coordinate (1-indexed).
         Returns:
             A new Point instance.
         """
-        return super().__new__(cls, (row, col))
+        return super().__new__(cls, (col, row))
 
     @classmethod
     def parse(cls, point_str: str) -> 'Point':
         """
         Returns a Point instance from a string representation.
         Args:
-            point_str: String representation of the point in the format
-                       "A1", "B3", etc. (column letter followed by row number)
+            point_str: String representation of the point in the 'A1' format where
+                        'A1' is in the lower-left corner of the board.
+                       'A1' == (1, 19), 'Q11' == (16, 9), etc. 
         Returns:
             A new Point instance.
         Raises:
@@ -49,7 +53,7 @@ class Point(Tuple[int, int]):
         # input validation
         if not point_str or len(point_str) not in [2, 3]:
             raise ValueError(f"Invalid coordinate format: {point_str}\n\
-                               Expected format \"A1\", \"B13\", etc. (column letter followed by row number)")
+                               Expected format \'a1\', \'q11\', etc.")
         col_letter = point_str[0].upper()
         if col_letter not in BOARD_LETTERS:
             raise ValueError(f"Invalid column letter: {col_letter}")
@@ -62,11 +66,11 @@ class Point(Tuple[int, int]):
 
         # convert str to int
         try:
-            row = int(point_str[1:])
+            row = 20 - int(point_str[1:])
         except ValueError:
             raise ValueError(f"Invalid row number: {point_str[1:]}")
 
-        return cls(row, col)
+        return cls(col, row)
 
     def __str__(self) -> str:
         """
@@ -77,7 +81,7 @@ class Point(Tuple[int, int]):
         """
         # adjusts offset to account for missing 'I' in valid_col_letters
         col_letter = chr(ord('A') + self[0] - 1) if self[1] <= 8 else chr(ord('A') + self[1])
-        return f"{col_letter}{self[1]}"
+        return f"{col_letter}{20-self[1]}"
 
     def __eq__(self, value):
         return super().__eq__(value)
@@ -119,8 +123,10 @@ class Board:
             Defaults to 19.
         """
         self.size = size
-        # create an empty Board
-        self.state: list[list[Optional[Stone]]] = [[None for _ in range(self.size)] for _ in range(self.size)]
+        # create an empty 2d list to hold the state of our Board class
+        self.state: list[list[Optional[Stone]]] = [
+            [None for _ in range(self.size)] for _ in range(self.size)
+        ]
         # print(self.state)  # Uncomment to see the board representation
 
     def __getitem__(self, point: Point) -> Optional[Stone]:
