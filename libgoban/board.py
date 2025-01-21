@@ -186,18 +186,3 @@ class Board:
                 return self.board[point]
 
         return BoardIterator(self)
-
-# @dataclass
-# class Group:
-#     stone: Stone  # represents the Stone that all members will be
-#     seed: Point
-#     _board: Board
-
-#     def _find_members(self):
-#         """Uses recursion to find all ally stones
-#         This thing is a bit of a monster in terms of nesting... I will hopefully clean this up later
-#         """
-#         # break the recursion if we've already gone over all coordinates
-#         _seen: list[Point] = []
-#         if self.members == _seen:
-#             return
