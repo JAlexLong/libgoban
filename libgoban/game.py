@@ -1,22 +1,35 @@
+# Copyright (C) 2025  J. Alex Long <jalexlong@proton.me>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+from .board import Stone, Point, Board
+
 from dataclasses import dataclass
-from enum import IntEnum
 from typing import Optional
 
-
-class PlayerType(IntEnum):
-    PLAYER = 0
-    CPU    = 1
 
 @dataclass
 class Player:
     name: str
-    player_type: PlayerType
-    stone: Optional[Stone]
+    stone: Optional[Stone] = None
 
 @dataclass
 class Move:
     point: Point
     stone: Stone
+
+    def islegal(self, board: Board): ...
 
 @ dataclass
 class Game:
@@ -40,15 +53,3 @@ class Game:
         last_move = self.history.pop()
         self.remove_stone(last_move)
         self.turn = self.turn.opposite_color()
-
-
-
-def main():
-    player1 = Player("Black", PlayerType.PLAYER, Stone.BLACK)
-    player2 = Player("White", PlayerType.CPU, Stone.WHITE)
-    ruleset = RuleSet()
-    game = Game(player1, player2, ruleset)
-    print(game.board[0, 0])
-
-if __name__ == '__main__':
-    main()

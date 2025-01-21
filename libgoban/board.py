@@ -15,10 +15,11 @@
 
 from dataclasses import dataclass
 from enum import IntEnum
+from functools import lru_cache
 from typing import Optional, Tuple
 
 
-# The letter 'I' is typically excluded to avoid confusion with 'J'
+# The letter 'i' is typically excluded to avoid confusion with 'j'
 BOARD_LETTERS = "ABCDEFGHJKLMNOPQRST"
 
 
@@ -34,66 +35,78 @@ class Stone(IntEnum):
 
 
 class Point(Tuple[int, int]):
-    """
-    Represents a point on a Go board.
-    Coordinates are in the format (col, row) and are 1-based indexed.
-    Inherits from typing.Tuple for immutability and efficiency.
-    """
+    """Represents a point on a Go board."""
     def __new__(cls, col: int, row: int) -> 'Point':
         """
-        Creates a new Point instance in the traditional Japanese format where 1-1
-            is in the upper-left corner. I've chosen this format as the default
-            because it is the closest to what our Board class will resemble.
-            For more information, see https://senseis.xmp.net/?Coordinates
+        Returns a new Point instance.
+
         Args:
             col: Column coordinate (1-indexed).
             row: Row coordinate (1-indexed).
+
         Returns:
             A new Point instance.
         """
         return super().__new__(cls, (col, row))
 
+    @lru_cache(maxsize=19)
+    def _col_letter_to_index(letter):
+        """Converts a column letter to its 1-based index."""
+        index = ord(letter) - ord('A') + 1
+        if letter >= 'I':
+            index -= 1
+        return index
+
     @classmethod
-    def parse(cls, point_str: str) -> 'Point':
+    def from_str(cls, point_str: str) -> 'Point':
         """
-        Returns a Point instance from a string representation.
+        Returns a new Point instance from a string representation.
+
         Args:
-            point_str: String representation of the point in the 'A1' format, where
-                        'A1' is in the lower-left corner of the board.
-                       'A1' == (1, 19), 'Q11' == (16, 9), etc. 
+            point_str: String representation of the point in the 'A1' format
+                       or '1-1' format.
                        For more information, see https://senseis.xmp.net/?Coordinates
+
         Returns:
             A new Point instance.
+
         Raises:
+            TypeError: If point_str is not a string.
             ValueError: If point_str fails input validation checks.
         """
-        # TODO: Add 1-1 format parsing routines
         if not isinstance(point_str, str):
             raise TypeError(f"Expected a str, got {type(point_str)}")
 
-        if len(point_str) > 3 or len(point_str) < 2:
-            raise ValueError(f"Invalid coordinate format: '{point_str}'\n\
-                               Expected format 'a1', 'q11', etc.")
-        col_letter = point_str[0].upper()
-
-        if col_letter not in BOARD_LETTERS:
-            raise ValueError(f"Invalid column letter: '{col_letter}'\n\
-                               Valid column letters are '{BOARD_LETTERS}'")
-
-        col = ord(col_letter) - ord('A') + 1
-        # adjust offset to account for missing 'I' in BOARD_LETTERS
-        if col_letter in BOARD_LETTERS[8:]:
-            col -= 1
-
-        # convert str to int
         try:
-            row = 20 - int(point_str[1:])
-            if row < 1 or row > 19:
-                raise ValueError
-        except ValueError:
-            raise ValueError(f"Invalid row number: {point_str[1:]}")
+            if len(point_str) in [2, 3] and not '-' in point_str:
+                letter = point_str[0].upper()
+                if not letter in BOARD_LETTERS:
+                    raise ValueError(f"Invalid point_str: {point_str}")
+                col = cls._col_letter_to_index(letter)
+                row = 20 - int(point_str[1:])
+            elif len(point_str) > 2 and '-' in point_str:
+                col, row = map(int, point_str.split('-'))
+            else:
+                raise ValueError(f"Invalid point_str format: '{point_str}'")
+            
+            if not 1 <= col <= 19 or not 1 <= row <= 19:
+                raise ValueError(f"Coordinates out of range: '{point_str}'")
 
-        return cls(col, row)
+            return cls(col, row)
+
+        except (ValueError, IndexError):
+            raise ValueError(f"Invalid point_str: '{point_str}'")
+
+    @classmethod
+    def parse(cls, point) -> 'Point':
+        if isinstance(point, str):
+            return cls.from_str(point)
+        # elif isinstance(point, tuple):
+        #     return cls.from_tup(point)
+        # elif isinstance(point, dict):
+        #     return cls.from_dict(cls, point)
+        else:
+            raise TypeError(f"Expected str, got {type(point)}")
 
     def __str__(self) -> str:
         """
@@ -102,9 +115,8 @@ class Point(Tuple[int, int]):
         Returns:
             String representation of the point in the human-readable format "A1", "B3", etc.
         """
-        # adjusts offset to account for missing 'I' in valid_col_letters
         s = ""
-        col_letter = chr(ord('A') + self[0] - 1) if self[1] <= 8 else chr(ord('A') + self[1])
+        col_letter = cls._col_letter_to_index(self[0])
         s += f"{col_letter}{20-self[1]}"
         return s
 
@@ -143,13 +155,12 @@ class Board:
         s = ""
         for row in reversed(self.state):
             for stone in row:
-                match stone:
-                    case Stone.BLACK:
-                        s += "X"
-                    case Stone.WHITE:
-                        s += "O"
-                    case None:
-                        s += "."
+                if stone == Stone.BLACK:
+                    s += "X"
+                elif stone == Stone.WHITE:
+                    s += "O"
+                else:
+                    s += "."
             s += "\n"
         return s
 
