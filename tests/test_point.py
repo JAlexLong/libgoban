@@ -17,10 +17,12 @@ def test_point_new():
     tup19_19 = (19, 19)
     assert pt19_19 == tup19_19
 
+
 def test_point_new_2():
     # just a little experimental alternate test to test_point_new
     # using a for loop to test *all* points instead
     ...
+
 
 def test_point_parse():
     pt1_1 = Point(1, 19)
@@ -48,7 +50,11 @@ def test_point_parse():
     pt_q11 = Point.parse("q11")
     assert pt16_9 == pt_q11
 
+
 def test_point_parse_bad_type():
+    with pytest.raises(TypeError) as e_info:
+        Point.parse()
+    
     with pytest.raises(TypeError) as e_info:
         Point.parse(None)
     
@@ -58,9 +64,10 @@ def test_point_parse_bad_type():
     with pytest.raises(TypeError) as e_info:
         Point.parse({'d': 4})
 
+
 def test_point_parse_invalid_str():
     with pytest.raises(ValueError) as e_info:
-        Point.parse('x13')
+        Point.parse('w13')
     
     with pytest.raises(ValueError) as e_info:
         Point.parse('a93')
