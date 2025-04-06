@@ -18,6 +18,7 @@ from enum import IntEnum
 from functools import lru_cache
 from typing import Optional, Tuple
 
+BOARD_LETTERS = "ABCDEFGHJKLMNOPQRST"
 
 class Stone(IntEnum):
     """Represents the colors of stones in the game of Go."""
