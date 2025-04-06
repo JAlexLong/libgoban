@@ -22,22 +22,41 @@ from typing import Optional
 @dataclass
 class Player:
     name: str
-    stone: Optional[Stone] = None
+    stone: Stone
+
 
 @dataclass
 class Move:
-    point: Point
+    point: Optional[Point]  # None represents a pass move
     stone: Stone
 
-    def islegal(self, board: Board): ...
+    def islegal(self, board: Board) -> bool: 
+        if self.point == None:
+            return True
+        # if empty, let's place it. Obviously not final behavior
+        elif not board[self.point]:
+            return True
+        # assume failure
+        else:
+            return False
+        
 
-@ dataclass
 class Game:
-    player1: Player
-    player2: Player
-    turn: Stone = Stone.BLACK
-    board: Board = Board()
-    history: list = []
+    """A class representing a game of Go between two players."""
+    def __init__(self, 
+                 player1: Player, 
+                 player2: Player, 
+                 board: Board = Board(9),
+                 turn: Stone = Stone.BLACK, 
+                 history: list[Move] = [],
+                 komi: float = 7.5,
+                 ): 
+        self.player1 = player1 
+        self.player2 = player2 
+        self.board = board
+        self.turn = turn 
+        self.history = history
+        self.komi = komi
 
     def make_move(self, move: Move):
         """Makes move in self.Board, self.history and changes self.turn"""
@@ -51,5 +70,8 @@ class Game:
 
     def undo_last_move(self):
         last_move = self.history.pop()
-        self.remove_stone(last_move)
+        # todo: implement check if last move was a capture and restore the captured group.
+        self.remove_stone(last_move.point)
         self.turn = self.turn.opposite_color()
+
+    def end_game(self): ...

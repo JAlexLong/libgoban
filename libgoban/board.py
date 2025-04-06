@@ -19,10 +19,6 @@ from functools import lru_cache
 from typing import Optional, Tuple
 
 
-# The letter 'i' is typically excluded to avoid confusion with 'j'
-BOARD_LETTERS = "ABCDEFGHJKLMNOPQRST"
-
-
 class Stone(IntEnum):
     """Represents the colors of stones in the game of Go."""
     BLACK = 0
@@ -125,6 +121,8 @@ class Point(Tuple[int, int]):
 
 
 class Board:
+    """Represents the board of the game of Go."""
+
     def __init__(self, size: int = 19):
         """Initializes a new Board object
 
@@ -136,6 +134,8 @@ class Board:
             raise ValueError(f"Invalid board size: {size}")
 
         self.size = size
+        # Storing the state as a list of lists with items set to either
+        # Stone or None - aka Optional[Stone] aka Union[Stone, None].
         self.state: list[list[Optional[Stone]]] = [
             [None for _ in range(size)] for _ in range(size)
         ]
