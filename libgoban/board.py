@@ -20,6 +20,11 @@ from typing import Optional, Tuple
 
 BOARD_LETTERS = "ABCDEFGHJKLMNOPQRST"
 
+
+# +-----------------+
+# |   STONE CLASS   |
+# +-----------------+
+
 class Stone(IntEnum):
     """Represents the colors of stones in the game of Go."""
     BLACK = 0
@@ -30,6 +35,10 @@ class Stone(IntEnum):
         """Returns the opposite color of the current stone."""
         return Stone((Stone.WHITE.value, Stone.BLACK.value)[self.value])
 
+
+# +-----------------+
+# |   POINT CLASS   |
+# +-----------------+
 
 class Point(Tuple[int, int]):
     """Represents a point on a Go board."""
@@ -121,9 +130,20 @@ class Point(Tuple[int, int]):
         return super().__eq__(value)
 
 
+# +-------------------------+
+# |   CUSTOM BOARD ERRORS   |
+# +-------------------------+
+
+class StonePlacementError(ValueError):
+    """Raise when attempting to place a stone in a Board class where a stone already exists."""
+
+
+# +-----------------+
+# |   BOARD CLASS   |
+# +-----------------+
+
 class Board:
     """Represents the board of the game of Go."""
-
     def __init__(self, size: int = 19):
         """Initializes a new Board object
 
@@ -140,12 +160,14 @@ class Board:
         self.state: list[list[Optional[Stone]]] = [
             [None for _ in range(size)] for _ in range(size)
         ]
-        # print(self.state)  # Uncomment to see the board representation
+        # print(self.state)  # Uncomment to see the board representation on initialization.
 
     def __getitem__(self, point: Point) -> Optional[Stone]:
         if not isinstance(point, Point):
             raise TypeError(f"Expected a Point object, got {type(point)}")
         col, row = point
+        print(f"[+] DEBUG OUTPUT [+] col -> {col}")
+        print(f"[+] DEBUG OUTPUT [+] row -> {row}")
         return self.state[row-1][col-1]
 
     def __setitem__(self, point: Point, stone: Optional[Stone]):
