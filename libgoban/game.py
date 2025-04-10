@@ -106,8 +106,11 @@ class Game:
 
     def undo_last_move(self):
         last_move = self.history.pop()
-        # TODO: implement check if last move was a capture and restore the captured group.
+        # TODO: implement check if last move was a 
+        #       capture and restore the captured group.
         self.remove_stone(last_move.point)
         self.turn = self.turn.opposite_color()
 
     def end_game(self): ...
+
+    def play(): ...

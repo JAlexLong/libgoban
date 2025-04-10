@@ -18,7 +18,6 @@
 from .board import *
 from .game import *
 
-from rich import print
 from typing import Optional, Union
 
 BANNER = """
@@ -35,6 +34,9 @@ BANNER = """
 # +------------------------+
 
 def game_menu():
+    print(BANNER)
+    print("~~~ Welcome to the libgoban cli interface ~~~")
+    # Select game mode
     while True:
         print()
         print("\nSelect game mode or enter 'q' to quit:")
@@ -57,7 +59,7 @@ def game_menu():
 
 def create_player(player_num: int = 1, other_player: Optional[Union[Player, Engine]] = None) -> Player:
     """Retrieve necessary player info from stdin and return a Player object"""
-    print(f"\n[bold][+] Getting info for Player {player_num}.[/]")
+    print(f"\n[+] Getting info for Player {player_num}.")
     name: str = get_player_name(player_num)
     if isinstance(other_player, type(None)):
         stone: Stone = get_player_stone(player_num)
@@ -85,7 +87,7 @@ def get_player_name(player_num: int = 1) -> str:
 def get_player_stone(player_num: int = 1) -> Stone:
     """Gets which Stone the player prefers to play from stdin"""
     while True:
-        print(f"\nWhich stones will you take, [bold]player {player_num}[/]?")
+        print(f"\nWhich stones will you take, player {player_num}?")
         print("\t1) Black")
         print("\t2) White")
         stone_selection = input(">>> ")
@@ -96,14 +98,14 @@ def get_player_stone(player_num: int = 1) -> Stone:
             stone = Stone.WHITE
             break
         else:
-            print(f"[bold red]Invalid option:[/] {stone_selection}")
+            print(f"Invalid option: {stone_selection}")
     return stone
 
 def create_engine() -> Engine: ...
 
 def create_game(player1: Union[Player, Engine], player2: Union[Player, Engine]) -> Game:
     """Retrieve necessary game info from stdin and return a Game object"""
-    print("\n[bold][+] Getting info for the game.[/]")
+    print("\n[+] Getting info for the game.")
     while True:
         print("\nWhat size board would you like to play on?")
         print("\t1) 9x9")
@@ -120,7 +122,7 @@ def create_game(player1: Union[Player, Engine], player2: Union[Player, Engine]) 
             size = 19
             break
         else:
-            print(f"[bold red]Invalid option:[/] {game_size}")
+            print(f"Invalid option: {game_size}")
     return Game(player1, player2, Board(size))
 
 
@@ -171,10 +173,7 @@ def pve_game(): ...
 def eve_game(): ...
 
 def main():
-    print(BANNER)
-    print("~~~ Welcome to the libgoban cli interface ~~~")
-    while True:
-        game_menu()
+    game_menu()
 
 if __name__ == "__main__":
     main()
