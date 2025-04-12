@@ -89,7 +89,7 @@ class Point(Tuple[int, int]):
                 if not letter in BOARD_LETTERS:
                     raise ValueError(f"Invalid point_str: {point_str}")
                 col = cls._col_letter_to_index(letter)
-                row = 20 - int(point_str[1:])
+                row = int(point_str[1:])
             elif len(point_str) > 2 and '-' in point_str:
                 col, row = map(int, point_str.split('-'))
             else:
@@ -166,8 +166,6 @@ class Board:
         if not isinstance(point, Point):
             raise TypeError(f"Expected a Point object, got {type(point)}")
         col, row = point
-        print(f"[+] DEBUG OUTPUT [+] col -> {col}")
-        print(f"[+] DEBUG OUTPUT [+] row -> {row}")
         return self.state[row-1][col-1]
 
     def __setitem__(self, point: Point, stone: Optional[Stone]):
@@ -176,7 +174,11 @@ class Board:
 
     def __str__(self):
         s = ""
-        for row in reversed(self.state):
+        letter_padding = len(BOARD_LETTERS[:self.size]) + (2*3)
+        print(letter_padding)
+        s += f"{BOARD_LETTERS[:self.size]:^{letter_padding}}\n"  # letters label
+        for i, row in enumerate(reversed(self.state)):
+            s += f"{(self.size - i):<3}"  # numbers label
             for stone in row:
                 if stone == Stone.BLACK:
                     s += "X"
@@ -184,7 +186,9 @@ class Board:
                     s += "O"
                 else:
                     s += "."
-            s += "\n"
+            s += f"{(self.size - i):>3}\n"  # numbers label
+        s += f"{BOARD_LETTERS[:self.size]:^{letter_padding}}\n"  # letters label
+        s += "\n"
         return s
 
     def __eq__(self, other):

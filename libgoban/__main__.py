@@ -135,9 +135,7 @@ def player_turn(player: Player, game: Game):
         raise TurnError()
     while True:
         # print board state
-        print(BOARD_LETTERS[:game.board.size])
         print(game.board)
-        print(BOARD_LETTERS[:game.board.size])
         # present options to player and get player input
         print("Enter your move or 'pass' to pass your turn.")
         point_input: str = input(">>> ")
