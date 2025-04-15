@@ -41,29 +41,29 @@ def test_point_new_2():
 
 def test_point_from_str():
     pt1_1 = Point(1, 1)
-    pt_a1 = Point.from_str("a19")
+    pt_a1 = Point.from_str("a1")
     assert pt1_1 == pt_a1
 
     pt8_12 = Point(8, 12)
-    pt_h8 = Point.from_str("h8")
-    assert pt8_12 == pt_h8
+    pt_h12 = Point.from_str("h12")
+    assert pt8_12 == pt_h12
 
     pt9_11 = Point(9, 11)
-    pt_j9 = Point.from_str("j9")
-    assert pt9_11 == pt_j9
+    pt_j11 = Point.from_str("j11")
+    assert pt9_11 == pt_j11
 
     pt10_10 = Point(10, 10)
     pt_k10 = Point.from_str("k10")
     assert pt10_10 == pt_k10
 
-    pt19_19 = Point(19, 1)
-    pt_t19 = Point.from_str("T19")
-    assert pt19_19 == pt_t19
+    pt19_1 = Point(19, 1)
+    pt_t1 = Point.from_str("T1")
+    assert pt19_1 == pt_t1
 
     # covers asymetrical cases
     pt16_9 = Point(16, 9)
-    pt_q11 = Point.from_str("q11")
-    assert pt16_9 == pt_q11
+    pt_q9 = Point.from_str("q9")
+    assert pt16_9 == pt_q9
 
 
 def test_point_parse_bad_type():

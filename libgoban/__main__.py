@@ -64,7 +64,6 @@ def create_player(player_num: int = 1, other_player: Optional[Union[Player, Engi
     if isinstance(other_player, type(None)):
         stone: Stone = get_player_stone(player_num)
     elif isinstance(other_player, Player):
-        print(other_player, other_player.stone)
         stone: Stone = other_player.stone.OTHER
     else:
         raise InvalidPlayerError("Expected other_player to be of type Union[Player, Engine] but is of type {type(other_player)} instead.")

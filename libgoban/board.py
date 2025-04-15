@@ -92,6 +92,7 @@ class Point(Tuple[int, int]):
                 row = int(point_str[1:])
             elif len(point_str) > 2 and '-' in point_str:
                 col, row = map(int, point_str.split('-'))
+                row = 20 - row
             else:
                 raise ValueError(f"Invalid point_str format: '{point_str}'")
             
@@ -175,8 +176,10 @@ class Board:
     def __str__(self):
         s = ""
         letter_padding = len(BOARD_LETTERS[:self.size]) + (2*3)
-        print(letter_padding)
-        s += f"{BOARD_LETTERS[:self.size]:^{letter_padding}}\n"  # letters label
+        #print(letter_padding)
+        # NOTE: I'm not sure why the letter_padding is offset only on the top
+        #       letter label by 1 character. Perhaps it's a rounding error?
+        s += f"{BOARD_LETTERS[:self.size]:^{letter_padding-1}}\n"  # letters label
         for i, row in enumerate(reversed(self.state)):
             s += f"{(self.size - i):<3}"  # numbers label
             for stone in row:
@@ -188,7 +191,6 @@ class Board:
                     s += "."
             s += f"{(self.size - i):>3}\n"  # numbers label
         s += f"{BOARD_LETTERS[:self.size]:^{letter_padding}}\n"  # letters label
-        s += "\n"
         return s
 
     def __eq__(self, other):
