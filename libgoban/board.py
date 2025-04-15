@@ -80,7 +80,7 @@ class Point(Tuple[int, int]):
         """Converts a 1-based column index to its letter representation."""
         if index >= 9:
             index += 1  # skips the letter 'I'
-        return str(ord('A') + index - 1)
+        return chr(ord('A') + index - 1)
 
     @classmethod
     def from_str(cls, point_str: str) -> 'Point':
