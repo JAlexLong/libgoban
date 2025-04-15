@@ -33,13 +33,15 @@ def test_board_getsetitem():
 
 def test_board_print():
     board = Board()
-    point_a1 = Point.parse("a1")
-    point_tengen = Point.parse("k10")
-    point_t19 = Point.parse("t19")
+    pt_a1 = Point.parse("a1")
+    pt_tengen = Point.parse("k10")
+    pt_t19 = Point.parse("t19")
 
-    board[point_a1] = Stone.BLACK
-    board[point_tengen] = Stone.BLACK
-    board[point_t19] = Stone.WHITE
+    board[pt_a1] = Stone.BLACK
+    board[pt_tengen] = Stone.BLACK
+    board[pt_t19] = Stone.WHITE
 
-    expected = '  ABCDEFGHJKLMNOPQRST   \n19 ..................O 19\n18 ................... 18\n17 ................... 17\n16 ................... 16\n15 ................... 15\n14 ................... 14\n13 ................... 13\n12 ................... 12\n11 ................... 11\n10 .........X......... 10\n9  ...................  9\n8  ...................  8\n7  ...................  7\n6  ...................  6\n5  ...................  5\n4  ...................  4\n3  ...................  3\n2  ...................  2\n1  X..................  1\n   ABCDEFGHJKLMNOPQRST   \n'
+    print(pt_tengen)
+
+    expected = '   ABCDEFGHJKLMNOPQRST   \n19 ..................O 19\n18 ................... 18\n17 ................... 17\n16 ................... 16\n15 ................... 15\n14 ................... 14\n13 ................... 13\n12 ................... 12\n11 ................... 11\n10 .........X......... 10\n9  ...................  9\n8  ...................  8\n7  ...................  7\n6  ...................  6\n5  ...................  5\n4  ...................  4\n3  ...................  3\n2  ...................  2\n1  X..................  1\n   ABCDEFGHJKLMNOPQRST   \n'
     assert str(board) == expected

@@ -42,27 +42,45 @@ class Stone(IntEnum):
 
 class Point(Tuple[int, int]):
     """Represents a point on a Go board."""
-    def __new__(cls, col: int, row: int, size: int = 19) -> 'Point':
+    def __new__(cls, col: int, row: int) -> 'Point':
         """
         Returns a new Point instance.
 
         Args:
             col: Column coordinate (1-indexed).
             row: Row coordinate (1-indexed).
-            size: Board size (defaults to 19)
 
         Returns:
             A new Point instance.
         """
+        if not 1 <= col <= 19 or not 1 <= row <= 19:
+            raise ValueError(f"Coordinates ({col}, {row}) out of range for board size {size}")
         return super().__new__(cls, (col, row))
+    
+    @property
+    def col(self) -> int:
+        """Returns the column coordinate (1-indexed)."""
+        return self[0]
+    
+    @property
+    def row(self) -> int:
+        """Returns the row coordinate (1-indexed)."""
+        return self[1]
 
     @lru_cache(maxsize=19)
-    def _col_letter_to_index(letter):
+    def _col_letter_to_index(cls, letter: str) -> int:
         """Converts a column letter to its 1-based index."""
         index = ord(letter) - ord('A') + 1
         if letter >= 'I':
             index -= 1
         return index
+    
+    @lru_cache(maxsize=19)
+    def _index_to_col_letter(cls, index: int) -> str:
+        """Converts a 1-based column index to its letter representation."""
+        if index >= 9:
+            index += 1  # skips the letter 'I'
+        return str(ord('A') + index - 1)
 
     @classmethod
     def from_str(cls, point_str: str) -> 'Point':
@@ -89,7 +107,7 @@ class Point(Tuple[int, int]):
                 letter = point_str[0].upper()
                 if not letter in BOARD_LETTERS:
                     raise ValueError(f"Invalid point_str: {point_str}")
-                col = cls._col_letter_to_index(letter)
+                col = cls._col_letter_to_index(cls, letter)
                 row = int(point_str[1:])
             elif len(point_str) > 2 and '-' in point_str:
                 col, row = map(int, point_str.split('-'))
@@ -117,16 +135,17 @@ class Point(Tuple[int, int]):
             raise TypeError(f"Expected str, got {type(point)}")
 
     def __str__(self) -> str:
-        """
-        Returns a string representation of the point in 'A1' format.
-
-        Returns:
-            String representation of the point in the human-readable format "A1", "B3", etc.
-        """
+        """Returns a string representation of the point in 'A1' format."""
         s = ""
-        col_letter = cls._col_letter_to_index(self[0])
+        col_letter = self._index_to_col_letter(self[0])
         s += f"{col_letter}{20-self[1]}"
         return s
+    
+    def __repr__(self) -> str:
+        return f"Point({self[0], self[1]})"
+        
+    def __hash__(self):
+        return hash((self.col, self.row))
 
     def __eq__(self, value):
         return super().__eq__(value)
@@ -180,7 +199,7 @@ class Board:
         #print(letter_padding)
         # NOTE: I'm not sure why the letter_padding is offset only on the top
         #       letter label by 1 character. Perhaps it's a rounding error?
-        s += f"{BOARD_LETTERS[:self.size]:^{letter_padding-1}}\n"  # letters label
+        s += f"{BOARD_LETTERS[:self.size]:^{letter_padding}}\n"  # letters label
         for i, row in enumerate(reversed(self.state)):
             s += f"{(self.size - i):<3}"  # numbers label
             for stone in row:
