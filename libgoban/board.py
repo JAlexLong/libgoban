@@ -42,13 +42,14 @@ class Stone(IntEnum):
 
 class Point(Tuple[int, int]):
     """Represents a point on a Go board."""
-    def __new__(cls, col: int, row: int) -> 'Point':
+    def __new__(cls, col: int, row: int, size: int = 19) -> 'Point':
         """
         Returns a new Point instance.
 
         Args:
             col: Column coordinate (1-indexed).
             row: Row coordinate (1-indexed).
+            size: Board size (defaults to 19)
 
         Returns:
             A new Point instance.

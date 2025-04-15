@@ -94,6 +94,7 @@ class Game:
         self.history = history
         self.komi = komi
         self.captures = captures
+        self.playing = False
 
     def make_move(self, move: Move):
         """Makes move in self.board, self.history and changes self.turn"""
@@ -107,10 +108,12 @@ class Game:
     def undo_last_move(self):
         last_move = self.history.pop()
         # TODO: implement check if last move was a 
-        #       capture and restore the captured group.
+        #       capture and restore the captured group/stone.
         self.remove_stone(last_move.point)
         self.turn = self.turn.opposite_color()
 
-    def end_game(self): ...
+    def end(self): 
+        self.playing = False
 
-    def play(): ...
+    def play(self):
+        self.playing = True
